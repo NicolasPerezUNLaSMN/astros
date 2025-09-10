@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -37,37 +37,25 @@
   <div id="horoscopes" class="grid"></div>
 
   <script>
-    const signs = [
-      "aries","taurus","gemini","cancer","leo","virgo",
-      "libra","scorpio","sagittarius","capricorn","aquarius","pisces"
-    ];
-
-    async function fetchHoroscope(sign) {
-      const url = `https://horoscope-free-api.vercel.app/today/${sign}`;
-      const res = await fetch(url);
-      return await res.json();
-    }
-
     async function loadHoroscopes() {
-      const container = document.getElementById("horoscopes");
-      for (const sign of signs) {
-        try {
-          const data = await fetchHoroscope(sign);
+      try {
+        const res = await fetch("https://api.viewbits.com/v1/horoscope?sign=all");
+        const json = await res.json();
+        const container = document.getElementById("horoscopes");
+
+        json.data.forEach(h => {
           const card = document.createElement("div");
           card.className = "card";
           card.innerHTML = `
-            <h2>${sign.charAt(0).toUpperCase() + sign.slice(1)}</h2>
-            <p><strong>Fecha:</strong> ${data.date}</p>
-            <p>${data.horoscope}</p>
+            <h2>${h.name} ${h.icon}</h2>
+            <p><em>${h.dates}</em></p>
+            <p>${h.prediction}</p>
           `;
           container.appendChild(card);
-        } catch (err) {
-          console.error("Error cósmico con", sign, err);
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `<h2>${sign}</h2><p>No se pudo consultar el universo 😢</p>`;
-          container.appendChild(card);
-        }
+        });
+      } catch (err) {
+        console.error("Error cósmico:", err);
+        document.getElementById("horoscopes").textContent = "No se pudo consultar los astros. ¡Tirá una moneda!";
       }
     }
 
@@ -75,3 +63,4 @@
   </script>
 </body>
 </html>
+
