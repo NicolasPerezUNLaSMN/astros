@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Horóscopos del Día</title>
 <style>
 body {
@@ -14,26 +15,29 @@ body {
 }
 h1 {
   margin-bottom: 1em;
+  font-size: 2em;
 }
 .signs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 2em;
 }
 .sign-button {
   background: #1b263b;
   border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 15px 20px;
+  border-radius: 12px;
   color: #ffcc00;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.2em;
   transition: 0.2s;
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 10px;
+  min-width: 120px;
 }
 .sign-button:hover {
   background: #415a77;
@@ -41,15 +45,43 @@ h1 {
 #horoscope {
   background: #1b263b;
   padding: 20px;
-  border-radius: 12px;
-  max-width: 600px;
+  border-radius: 16px;
+  max-width: 90%;
   margin: 0 auto;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  font-size: 1.1em;
+  line-height: 1.5em;
+}
+#horoscope h2 {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+#horoscope p {
+  font-size: 1.1em;
 }
 #horoscope img {
-  width: 50px;
+  width: 60px;
+  max-width: 20%;
   vertical-align: middle;
   margin-right: 10px;
+}
+/* Responsive */
+@media (max-width: 480px) {
+  .sign-button {
+    font-size: 1.1em;
+    padding: 12px 16px;
+    min-width: 100px;
+  }
+  #horoscope {
+    padding: 16px;
+    font-size: 1em;
+  }
+  #horoscope h2 {
+    font-size: 1.3em;
+  }
+  #horoscope p {
+    font-size: 1em;
+  }
 }
 </style>
 </head>
@@ -66,7 +98,7 @@ const day = today.getDate();
 const month = today.getMonth() + 1;
 const dateString = `El pronóstico para el día ${day} del mes ${month} es:`;
 
-// Horóscopos inventados y emojis
+// Horóscopos inventados y emojis (resumido aquí, reemplazá por todos tus signos)
 const horoscopos = {
   "Aries": {
     "emoji":"♈",
@@ -375,8 +407,6 @@ const horoscopos = {
     "Dinero corto, amor tibio, trabajo pesado, ascenso imposible. Respira."
   ]
 }
-
-  // Los demás signos: Leo, Virgo, Libra, Scorpio, Sagittarius, Capricorn, Aquarius, Pisces se pueden agregar de la misma manera
 };
 
 // Crear botones
@@ -404,5 +434,3 @@ function showHoroscope(sign) {
 
 </body>
 </html>
-
-
