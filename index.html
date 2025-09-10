@@ -1,66 +1,408 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Horóscopos del Día</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1b2a;
-      color: #e0e1dd;
-      margin: 0;
-      padding: 1em;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1em;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1em;
-    }
-    .card {
-      background: #1b263b;
-      padding: 1em;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    }
-    .card h2 {
-      margin-top: 0;
-      color: #ffcc00;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Horóscopos del Día</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0d1b2a;
+  color: #e0e1dd;
+  margin: 0;
+  padding: 1em;
+  text-align: center;
+}
+h1 {
+  margin-bottom: 1em;
+}
+.signs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 2em;
+}
+.sign-button {
+  background: #1b263b;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: #ffcc00;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sign-button:hover {
+  background: #415a77;
+}
+#horoscope {
+  background: #1b263b;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+#horoscope img {
+  width: 50px;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+</style>
 </head>
 <body>
-  <h1>✨ Horóscopos de Hoy ✨</h1>
-  <div id="horoscopes" class="grid"></div>
 
-  <script>
-    async function loadHoroscopes() {
-      try {
-        const res = await fetch("https://api.viewbits.com/v1/horoscope?sign=all");
-        const json = await res.json();
-        const container = document.getElementById("horoscopes");
+<h1>✨ Horóscopos del Día ✨</h1>
+<div class="signs" id="signs"></div>
+<div id="horoscope"></div>
 
-        json.data.forEach(h => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <h2>${h.name} ${h.icon}</h2>
-            <p><em>${h.dates}</em></p>
-            <p>${h.prediction}</p>
-          `;
-          container.appendChild(card);
-        });
-      } catch (err) {
-        console.error("Error cósmico:", err);
-        document.getElementById("horoscopes").textContent = "No se pudo consultar los astros. ¡Tirá una moneda!";
-      }
-    }
+<script>
+// Fecha del día
+const today = new Date();
+const day = today.getDate();
+const month = today.getMonth() + 1;
+const dateString = `El pronóstico para el día ${day} del mes ${month} es:`;
 
-    loadHoroscopes();
-  </script>
+// Horóscopos inventados y emojis
+const horoscopos = {
+  "Aries": {
+    "emoji":"♈",
+    "horos": [
+      "Plata escasa, amor incierto, jefe pesado, oportunidades inexistentes. Aguanta.",
+      "Dinero mínimo, romance breve, trabajo agotador, ascenso imposible. Sobrevive.",
+      "Sueldo flaco, amor tibio, oficina gris, mejoras nulas. Tu ingenio resiste.",
+      "Bolsillo vacío, amor pasajero, jefe autoritario, oportunidades cero. Paciencia.",
+      "Dinero escaso, amor confuso, laburo pesado, ascenso inexistente. Ríe en secreto.",
+      "Sueldo triste, amor distraído, jefe impasible, oportunidades nulas. Resiste.",
+      "Plata corta, amor irregular, oficina opresiva, mejoras inexistentes. Respira.",
+      "Dinero flaco, romance fugaz, jefes duros, oportunidades cero. Mantente firme.",
+      "Bolsillo vacío, amor tibio, trabajo pesado, ascenso imposible. Aguanta.",
+      "Dinero mínimo, amor pasajero, jefe rígido, mejoras nulas. Sobrevive.",
+      "Hoy el dinero brilla por su ausencia, pero tu ingenio es tu aliado.",
+      "Amor inestable, trabajo pesado y jefes estrictos, igual resistís.",
+      "Plata escasa, romance pasajero, oficina gris, ascenso imposible. Respira.",
+      "Dinero mínimo, amor tibio, jefe autoritario, oportunidades nulas. Aguanta.",
+      "Bolsillo vacío, amor confuso, trabajo agotador, ascenso imposible. Resiste.",
+      "Sueldo triste, romance ligero, oficina pesada, mejoras nulas. Sobrevive.",
+      "Dinero escaso, amor pasajero, jefe rígido, oportunidades cero. Paciencia.",
+      "Plata mínima, amor cambiante, trabajo pesado, ascenso inexistente. Aguanta.",
+      "Dinero corto, romance tibio, jefe impasible, oportunidades nulas. Respira.",
+      "Bolsillo vacío, amor ligero, oficina gris, ascenso imposible. Mantente firme."
+    ]
+  },
+  "Tauro": {
+    "emoji":"♉",
+    "horos":[
+      "Plata corta, amor estable, oficina pesada, oportunidades inexistentes. Paciencia.",
+      "Sueldo bajo, romance aburrido, jefes autoritarios, ascenso nulo. Aguanta.",
+      "Dinero escaso, amor tibio, trabajo gris, mejoras inexistentes. Resiste.",
+      "Bolsillo vacío, amor pasajero, jefe rígido, oportunidades cero. Mantente firme.",
+      "Dinero mínimo, romance irregular, oficina opresiva, ascenso imposible. Respira.",
+      "Sueldo triste, amor distraído, jefes indiferentes, mejoras nulas. Sobrevive.",
+      "Plata flaca, amor inestable, trabajo pesado, oportunidades cero. Paciencia.",
+      "Dinero escaso, romance fugaz, jefe rígido, ascenso imposible. Resiste.",
+      "Bolsillo vacío, amor tibio, oficina gris, mejoras inexistentes. Aguanta.",
+      "Dinero mínimo, amor pasajero, trabajo agotador, oportunidades nulas. Respira.",
+      "Hoy la billetera sigue vacía, pero tu paciencia es oro.",
+      "Amor estable, pero rutina pesada, oficina gris, jefes duros.",
+      "Plata mínima, romance pasajero, oportunidades inexistentes. Aguanta.",
+      "Sueldo bajo, amor irregular, jefe autoritario, mejoras nulas. Respira.",
+      "Dinero escaso, romance tibio, oficina opresiva, ascenso imposible. Mantente firme.",
+      "Bolsillo vacío, amor ligero, trabajo agotador, oportunidades cero. Resiste.",
+      "Dinero corto, romance pasajero, jefe impasible, mejoras inexistentes. Aguanta.",
+      "Plata mínima, amor cambiante, oficina gris, oportunidades nulas. Respira.",
+      "Sueldo escaso, amor ligero, trabajo pesado, ascenso imposible. Mantente firme.",
+      "Dinero corto, romance tibio, jefe rígido, oportunidades nulas. Aguanta."
+    ]
+  },
+  "Geminis": {
+    "emoji":"♊",
+    "horos":[
+      "Sueldo mínimo, amor cambiante, jefe opresivo, oportunidades cero. Aguanta.",
+      "Plata escasa, romance inestable, trabajo agotador, ascenso imposible. Resiste.",
+      "Bolsillo vacío, amor pasajero, jefe rígido, mejoras nulas. Respira.",
+      "Dinero corto, amor confuso, oficina gris, oportunidades inexistentes. Mantente firme.",
+      "Sueldo triste, amor ligero, jefe autoritario, ascenso imposible. Sobrevive.",
+      "Dinero escaso, romance irregular, trabajo pesado, mejoras inexistentes. Aguanta.",
+      "Bolsillo vacío, amor tibio, jefe opresivo, oportunidades nulas. Resiste.",
+      "Dinero mínimo, amor fugaz, oficina gris, ascenso imposible. Paciencia.",
+      "Sueldo corto, amor cambiante, jefe rígido, oportunidades cero. Respira.",
+      "Dinero escaso, romance pasajero, trabajo pesado, mejoras nulas. Aguanta.",
+      "Hoy tu ingenio será tu escudo frente a la escasez y jefes pesados.",
+      "Plata mínima, amor confuso, oficina gris, oportunidades inexistentes. Respira.",
+      "Sueldo corto, romance pasajero, jefe rígido, ascenso imposible. Mantente firme.",
+      "Dinero mínimo, amor ligero, trabajo agotador, oportunidades nulas. Aguanta.",
+      "Bolso vacío, romance inestable, oficina gris, ascenso imposible. Resiste.",
+      "Sueldo escaso, amor tibio, jefe autoritario, mejoras nulas. Paciencia.",
+      "Dinero corto, romance pasajero, trabajo pesado, oportunidades cero. Respira.",
+      "Bolsillo vacío, amor cambiante, jefe rígido, ascenso imposible. Aguanta.",
+      "Dinero mínimo, amor tibio, oficina gris, oportunidades nulas. Resiste.",
+      "Sueldo escaso, romance fugaz, trabajo agotador, ascenso imposible. Mantente firme."
+    ]
+  },
+  "Cancer": {
+    "emoji":"♋",
+    "horos":[
+      "Dinero mínimo, amor tibio, jefe autoritario, oportunidades nulas. Respira.",
+      "Plata escasa, romance inestable, oficina pesada, mejoras inexistentes. Aguanta.",
+      "Sueldo flaco, amor pasajero, jefe rígido, ascenso imposible. Resiste.",
+      "Bolsillo vacío, amor confuso, trabajo agotador, oportunidades cero. Mantente firme.",
+      "Dinero corto, romance irregular, jefe opresivo, mejoras nulas. Respira.",
+      "Sueldo triste, amor ligero, oficina gris, ascenso imposible. Sobrevive.",
+      "Plata escasa, amor tibio, jefe rígido, oportunidades nulas. Aguanta.",
+      "Dinero mínimo, romance pasajero, trabajo pesado, mejoras inexistentes. Resiste.",
+      "Bolsillo vacío, amor fugaz, jefe opresivo, ascenso imposible. Paciencia.",
+      "Sueldo corto, amor cambiante, oficina gris, oportunidades cero. Respira.",
+      "Hoy los astros aconsejan paciencia y humor frente a jefes rígidos.",
+      "Dinero escaso, amor tibio, oficina opresiva, oportunidades nulas. Aguanta.",
+      "Sueldo mínimo, amor pasajero, jefe autoritario, ascenso imposible. Resiste.",
+      "Plata escasa, romance ligero, trabajo pesado, mejoras inexistentes. Respira.",
+      "Dinero corto, amor confuso, oficina gris, oportunidades cero. Mantente firme.",
+      "Sueldo triste, amor ligero, jefe rígido, ascenso imposible. Aguanta.",
+      "Bolsillo vacío, amor tibio, oficina pesada, mejoras nulas. Resiste.",
+      "Dinero mínimo, romance pasajero, trabajo agotador, oportunidades nulas. Respira.",
+      "Plata escasa, amor cambiante, jefe autoritario, ascenso imposible. Aguanta.",
+      "Sueldo corto, amor pasajero, oficina gris, oportunidades cero. Resiste."
+    ]
+  },
+"Leo": {
+  "emoji":"♌",
+  "horos":[
+    "Dinero escaso, amor intenso, jefe exigente, oportunidades nulas. Aguanta.",
+    "Sueldo mínimo, romance breve, oficina pesada, mejoras inexistentes. Resiste.",
+    "Plata corta, amor pasajero, jefe rígido, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor tibio, trabajo agotador, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance irregular, oficina opresiva, ascenso imposible. Aguanta.",
+    "Sueldo triste, amor ligero, jefe autoritario, mejoras nulas. Resiste.",
+    "Plata escasa, amor intenso, oficina gris, oportunidades nulas. Respira.",
+    "Dinero mínimo, amor pasajero, trabajo pesado, ascenso imposible. Aguanta.",
+    "Bolsillo vacío, romance fugaz, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo corto, amor tibio, oficina pesada, mejoras inexistentes. Paciencia.",
+    "Dinero escaso, amor cambiante, trabajo agotador, ascenso imposible. Aguanta.",
+    "Plata mínima, romance intenso, jefe autoritario, oportunidades nulas. Respira.",
+    "Sueldo mínimo, amor pasajero, oficina gris, mejoras inexistentes. Resiste.",
+    "Dinero corto, amor ligero, trabajo pesado, oportunidades cero. Aguanta.",
+    "Bolsillo vacío, amor tibio, jefe rígido, ascenso imposible. Respira.",
+    "Dinero escaso, romance pasajero, oficina opresiva, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor cambiante, trabajo agotador, ascenso imposible. Aguanta.",
+    "Plata mínima, amor intenso, jefe autoritario, mejoras inexistentes. Respira.",
+    "Dinero corto, amor pasajero, oficina gris, oportunidades cero. Resiste.",
+    "Bolsillo vacío, amor tibio, trabajo pesado, ascenso imposible. Aguanta."
+  ]
+},
+
+"Virgo": {
+  "emoji":"♍",
+  "horos":[
+    "Dinero mínimo, amor tibio, jefe rígido, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance pasajero, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor ligero, trabajo agotador, ascenso imposible. Respira.",
+    "Dinero mínimo, amor cambiante, jefe autoritario, oportunidades cero. Mantente firme.",
+    "Bolsillo vacío, romance tibio, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo corto, amor pasajero, jefe rígido, ascenso imposible. Resiste.",
+    "Dinero escaso, amor ligero, trabajo pesado, oportunidades nulas. Respira.",
+    "Plata mínima, romance cambiante, oficina gris, mejoras inexistentes. Aguanta.",
+    "Sueldo triste, amor tibio, jefe autoritario, oportunidades cero. Resiste.",
+    "Dinero corto, amor pasajero, trabajo agotador, ascenso imposible. Aguanta.",
+    "Plata escasa, amor ligero, oficina opresiva, mejoras inexistentes. Respira.",
+    "Sueldo mínimo, amor cambiante, jefe rígido, oportunidades nulas. Resiste.",
+    "Dinero corto, amor pasajero, trabajo pesado, ascenso imposible. Aguanta.",
+    "Bolsillo vacío, amor tibio, oficina gris, mejoras inexistentes. Respira.",
+    "Dinero escaso, romance pasajero, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo triste, amor ligero, trabajo agotador, ascenso imposible. Aguanta.",
+    "Plata mínima, amor cambiante, oficina opresiva, mejoras nulas. Respira.",
+    "Dinero corto, amor pasajero, jefe rígido, oportunidades cero. Resiste.",
+    "Bolsillo vacío, amor tibio, trabajo pesado, ascenso imposible. Aguanta.",
+    "Sueldo mínimo, amor ligero, oficina gris, mejoras inexistentes. Respira."
+  ]
+},
+
+"Libra": {
+  "emoji":"♎",
+  "horos":[
+    "Dinero escaso, amor inestable, jefe rígido, oportunidades nulas. Aguanta.",
+    "Sueldo mínimo, romance pasajero, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor ligero, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor tibio, jefe autoritario, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance cambiante, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor pasajero, jefe rígido, ascenso imposible. Resiste.",
+    "Plata escasa, amor ligero, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, romance pasajero, trabajo pesado, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor tibio, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor pasajero, oficina opresiva, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor cambiante, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, romance pasajero, jefe rígido, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor tibio, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, amor pasajero, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor ligero, jefe autoritario, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor pasajero, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor tibio, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, amor pasajero, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor tibio, trabajo pesado, ascenso imposible. Respira."
+  ]
+},
+
+"Escorpio": {
+  "emoji":"♏",
+  "horos":[
+    "Dinero mínimo, amor apasionado, jefe opresivo, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance intenso, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor fugaz, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor cambiante, jefe rígido, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance ligero, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor apasionado, jefe autoritario, ascenso imposible. Resiste.",
+    "Plata escasa, amor fugaz, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, amor intenso, trabajo pesado, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor cambiante, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina pesada, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor intenso, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, amor apasionado, jefe autoritario, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor fugaz, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, romance ligero, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor intenso, jefe rígido, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor cambiante, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor apasionado, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, amor fugaz, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor intenso, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor apasionado, trabajo pesado, ascenso imposible. Respira."
+  ]
+},
+
+"Sagitario": {
+  "emoji":"♐",
+  "horos":[
+    "Dinero mínimo, amor libre, jefe opresivo, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance pasajero, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor ligero, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor cambiante, jefe rígido, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance fugaz, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor ligero, jefe autoritario, ascenso imposible. Resiste.",
+    "Plata escasa, amor libre, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, romance pasajero, trabajo pesado, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor cambiante, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina pesada, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor libre, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, romance pasajero, jefe autoritario, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor ligero, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, amor cambiante, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor pasajero, jefe rígido, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor ligero, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor libre, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, romance pasajero, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor pasajero, trabajo pesado, ascenso imposible. Respira."
+  ]
+},
+
+"Capricornio": {
+  "emoji":"♑",
+  "horos":[
+    "Dinero mínimo, amor sólido, jefe rígido, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance aburrido, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor tibio, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor estable, jefe autoritario, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance monótono, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor sólido, jefe rígido, ascenso imposible. Resiste.",
+    "Plata escasa, amor aburrido, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, romance estable, trabajo agotador, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor tibio, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, romance monótono, oficina pesada, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor sólido, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, romance pasajero, jefe rígido, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor tibio, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, amor pasajero, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor sólido, jefe autoritario, oportunidades nulas. Resiste.",
+    "Sueldo triste, romance monótono, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor pasajero, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, amor sólido, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor tibio, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor pasajero, trabajo pesado, ascenso imposible. Respira."
+  ]
+},
+
+"Aquario": {
+  "emoji":"♒",
+  "horos":[
+    "Dinero mínimo, amor curioso, jefe rígido, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance breve, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor ligero, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor cambiante, jefe autoritario, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance pasajero, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor curioso, jefe rígido, ascenso imposible. Resiste.",
+    "Plata escasa, amor breve, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, romance pasajero, trabajo pesado, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor cambiante, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina pesada, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor curioso, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, romance pasajero, jefe rígido, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor ligero, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, amor cambiante, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor pasajero, jefe autoritario, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor ligero, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor curioso, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, romance pasajero, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor ligero, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor pasajero, trabajo pesado, ascenso imposible. Respira."
+  ]
+},
+
+"Piscis": {
+  "emoji":"♓",
+  "horos":[
+    "Dinero mínimo, amor soñador, jefe rígido, oportunidades nulas. Aguanta.",
+    "Sueldo escaso, romance inestable, oficina gris, mejoras inexistentes. Resiste.",
+    "Plata corta, amor ligero, trabajo agotador, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor tibio, jefe autoritario, oportunidades cero. Mantente firme.",
+    "Dinero mínimo, romance pasajero, oficina pesada, mejoras nulas. Aguanta.",
+    "Sueldo triste, amor soñador, jefe rígido, ascenso imposible. Resiste.",
+    "Plata escasa, amor inestable, oficina gris, oportunidades nulas. Respira.",
+    "Dinero corto, romance tibio, trabajo pesado, mejoras inexistentes. Aguanta.",
+    "Bolsillo vacío, amor ligero, jefe autoritario, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor soñador, oficina pesada, ascenso imposible. Aguanta.",
+    "Dinero escaso, amor pasajero, trabajo agotador, oportunidades nulas. Respira.",
+    "Plata mínima, romance tibio, jefe rígido, mejoras inexistentes. Resiste.",
+    "Sueldo corto, amor soñador, oficina gris, oportunidades cero. Aguanta.",
+    "Dinero mínimo, amor pasajero, trabajo pesado, ascenso imposible. Respira.",
+    "Bolsillo vacío, amor tibio, jefe autoritario, oportunidades nulas. Resiste.",
+    "Sueldo triste, amor soñador, oficina pesada, mejoras inexistentes. Aguanta.",
+    "Dinero escaso, amor tibio, trabajo agotador, ascenso imposible. Respira.",
+    "Plata mínima, romance pasajero, jefe rígido, oportunidades cero. Resiste.",
+    "Sueldo mínimo, amor soñador, oficina gris, mejoras inexistentes. Aguanta.",
+    "Dinero corto, amor tibio, trabajo pesado, ascenso imposible. Respira."
+  ]
+}
+
+  // Los demás signos: Leo, Virgo, Libra, Scorpio, Sagittarius, Capricorn, Aquarius, Pisces se pueden agregar de la misma manera
+};
+
+// Crear botones
+const signsContainer = document.getElementById("signs");
+Object.keys(horoscopos).forEach(sign => {
+  const btn = document.createElement("button");
+  btn.className = "sign-button";
+  btn.innerHTML = `${horoscopos[sign].emoji} ${sign}`;
+  btn.addEventListener("click", () => showHoroscope(sign));
+  signsContainer.appendChild(btn);
+});
+
+// Mostrar horóscopo aleatorio
+function showHoroscope(sign) {
+  const options = horoscopos[sign].horos;
+  const randomIndex = Math.floor(Math.random() * options.length);
+  const horoText = options[randomIndex];
+  const emoji = horoscopos[sign].emoji;
+  document.getElementById("horoscope").innerHTML = `
+    <h2>${emoji} ${sign}</h2>
+    <p>${dateString} ${horoText}</p>
+  `;
+}
+</script>
+
 </body>
 </html>
+
 
