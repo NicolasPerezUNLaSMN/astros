@@ -14,72 +14,55 @@ body {
   text-align: center;
 }
 h1 {
-  margin-bottom: 1em;
   font-size: 2em;
+  margin-bottom: 1em;
 }
-.signs {
+.cards-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 2em;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow-y: auto;
+  padding-bottom: 20px;
 }
-.sign-button {
+.card {
   background: #1b263b;
-  border: none;
-  padding: 15px 20px;
-  border-radius: 12px;
-  color: #ffcc00;
+  border-radius: 16px;
+  padding: 20px;
   cursor: pointer;
-  font-size: 1.2em;
-  transition: 0.2s;
+  transition: 0.3s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+.card:hover {
+  background: #415a77;
+}
+.card h2 {
+  margin: 0;
+  font-size: 1.5em;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-width: 120px;
 }
-.sign-button:hover {
-  background: #415a77;
-}
-#horoscope {
-  background: #1b263b;
-  padding: 20px;
-  border-radius: 16px;
-  max-width: 90%;
-  margin: 0 auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+.card p {
+  margin-top: 12px;
   font-size: 1.1em;
   line-height: 1.5em;
+  display: none; /* Oculto por defecto */
+  text-align: left;
 }
-#horoscope h2 {
-  font-size: 1.5em;
-  margin-bottom: 0.5em;
+.card.show p {
+  display: block;
 }
-#horoscope p {
-  font-size: 1.1em;
-}
-#horoscope img {
-  width: 60px;
-  max-width: 20%;
-  vertical-align: middle;
-  margin-right: 10px;
-}
-/* Responsive */
 @media (max-width: 480px) {
-  .sign-button {
-    font-size: 1.1em;
-    padding: 12px 16px;
-    min-width: 100px;
+  .card {
+    padding: 15px;
   }
-  #horoscope {
-    padding: 16px;
-    font-size: 1em;
-  }
-  #horoscope h2 {
+  .card h2 {
     font-size: 1.3em;
   }
-  #horoscope p {
+  .card p {
     font-size: 1em;
   }
 }
@@ -88,8 +71,7 @@ h1 {
 <body>
 
 <h1>✨ Horóscopos del Día ✨</h1>
-<div class="signs" id="signs"></div>
-<div id="horoscope"></div>
+<div class="cards-container" id="cards"></div>
 
 <script>
 // Fecha del día
@@ -98,8 +80,8 @@ const day = today.getDate();
 const month = today.getMonth() + 1;
 const dateString = `El pronóstico para el día ${day} del mes ${month} es:`;
 
-// Horóscopos inventados y emojis (resumido aquí, reemplazá por todos tus signos)
-const horoscopos = {
+// Horóscopos inventados
+const horoscopos ={
   "Aries": {
     "emoji":"♈",
     "horos": [
@@ -409,28 +391,25 @@ const horoscopos = {
 }
 };
 
-// Crear botones
-const signsContainer = document.getElementById("signs");
+// Crear cards
+const cardsContainer = document.getElementById("cards");
 Object.keys(horoscopos).forEach(sign => {
-  const btn = document.createElement("button");
-  btn.className = "sign-button";
-  btn.innerHTML = `${horoscopos[sign].emoji} ${sign}`;
-  btn.addEventListener("click", () => showHoroscope(sign));
-  signsContainer.appendChild(btn);
-});
+  const card = document.createElement("div");
+  card.className = "card";
+  const randomIndex = Math.floor(Math.random() * horoscopos[sign].horos.length);
+  const horoText = horoscopos[sign].horos[randomIndex];
+  card.innerHTML = `<h2>${horoscopos[sign].emoji} ${sign}</h2><p>${dateString} ${horoText}</p>`;
+  
+  card.addEventListener("click", () => {
+    card.classList.toggle("show");
+    card.scrollIntoView({behavior: "smooth", block: "center"});
+  });
 
-// Mostrar horóscopo aleatorio
-function showHoroscope(sign) {
-  const options = horoscopos[sign].horos;
-  const randomIndex = Math.floor(Math.random() * options.length);
-  const horoText = options[randomIndex];
-  const emoji = horoscopos[sign].emoji;
-  document.getElementById("horoscope").innerHTML = `
-    <h2>${emoji} ${sign}</h2>
-    <p>${dateString} ${horoText}</p>
-  `;
-}
+  cardsContainer.appendChild(card);
+});
 </script>
 
 </body>
 </html>
+
+
